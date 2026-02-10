@@ -1,0 +1,68 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and deploy the application
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Build & Deploy
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: ["deploy"] # Will run on push to the "main" branch
+
+jobs:
+  build:
+    runs-on: self-hosted # The type of runner that the job will run on
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          npm install
+
+  create-envfile:
+    runs-on: self-hosted
+    needs: build # Run only after the 'build' job is completed
+
+    steps:
+      - name: Create .env file
+        # Creates an '.env' file with environment variables
+        run: |
+          touch .env
+          echo PORT=${{ secrets.PORT }} >> .env
+          echo "MONGODB_URL=${{ secrets.MONGODB_URL }}" >> .env 
+          echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+          echo JWT_ACCESS_EXPIRATION_MINUTES=${{ secrets.JWT_ACCESS_EXPIRATION_MINUTES }} >> .env
+          echo JWT_REFRESH_EXPIRATION_DAYS=${{ secrets.JWT_REFRESH_EXPIRATION_DAYS }} >> .env
+          echo JWT_RESET_PASSWORD_EXPIRATION_MINUTES=${{ secrets.JWT_RESET_PASSWORD_EXPIRATION_MINUTES }} >> .env
+          echo JWT_VERIFY_EMAIL_EXPIRATION_MINUTES=${{ secrets.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES }} >> .env
+          echo NODE_ENV=${{ secrets.NODE_ENV }} >> .env
+          echo S3ACCESSKEYID=${{ secrets.S3ACCESSKEYID }} >> .env
+          echo "S3ACCESSSECRET=${{ secrets.S3ACCESSSECRET }}" >> .env
+          echo S3REGION=${{ secrets.S3REGION }} >> .env
+          echo S3BUCKET=${{ secrets.S3BUCKET }} >> .env
+          echo "REGISTERED_USER_KEY=${{ secrets.REGISTERED_USER_KEY }}" >> .env
+          echo WALLET_VERIFY_EXPIRATION_TIME=${{ secrets.WALLET_VERIFY_EXPIRATION_TIME }} >> .env
+          echo OTM_API_USERNAME=${{ secrets.OTM_API_USERNAME }} >> .env
+          echo OTM_API_PASSWORD=${{ secrets.OTM_API_PASSWORD }} >> .env
+          echo OTM_SANITY_API_USERNAME=${{ secrets.OTM_SANITY_API_USERNAME }} >> .env
+          echo OTM_SANITY_API_PASSWORD=${{ secrets.OTM_SANITY_API_PASSWORD }} >> .env
+          echo FORM_RECOGNIZER_API_KEY=${{ secrets.FORM_RECOGNIZER_API_KEY }} >> .env
+          echo FORM_RECOGNIZER_ENDPOINT=${{ secrets.FORM_RECOGNIZER_ENDPOINT }} >> .env
+          echo START_FIELDS_EXTRACTION_PROCESS=${{ secrets.START_FIELDS_EXTRACTION_PROCESS }} >> .env
+          echo GOOGLE_GEOCODING_API_KEY=${{ secrets.GOOGLE_GEOCODING_API_KEY }} >> .env
+          echo SKIP_DOCUMENT_DUPLICATE_CHECK=${{ secrets.SKIP_DOCUMENT_DUPLICATE_CHECK }} >> .env
+          echo OTM_BASE_URL=${{ secrets.OTM_BASE_URL }} >> .env
+          echo OTM_TW_CHARTER_VOYAGE_URL=${{ secrets.OTM_TW_CHARTER_VOYAGE_URL }} >> .env
+
+  deploy:
+    runs-on: self-hosted
+    needs: [build, create-envfile] # Run only after the 'build' and 'create-envfile' job is completed
+
+    steps:
+      - name: Deploy to production
+        # Starts your node js app in 'PM2'
+        run: |
+          pm2 stop ecosystem.config.js
+          pm2 start ecosystem.config.js
+          pm2 save
