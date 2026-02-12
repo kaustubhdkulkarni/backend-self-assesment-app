@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 const httpStatus = require('http-status');
 const ApiError = require('../utilities/apiErrors');
-const config = require('../config/config');
+// const config = require('../config/config');
 const logger = require('../config/logger');
 
 // Error converter middleware

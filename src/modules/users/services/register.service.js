@@ -9,7 +9,7 @@ const {
   otpOnMobileSendCountryCodes,
 } = require("../../../config/enums");
 const logger = require("../../../config/logger");
-const getCivilDetails = require("../../kyc/services/getCivilDetails.service");
+
 
 const registerUser = async (body) => {
   try {
@@ -167,58 +167,10 @@ const registerUser = async (body) => {
       body?.phone?.startsWith("968");
 
     // ✅ Fetch civil details for Omani investors
-    if (body.civilNumber && isOman && body.accountType === accountType.investor) {
-      try {
-        logger.info(`Fetching civil details from Mala'a API for ${body?.email}, civil number: ${body.civilNumber}`);
-        getCivilData = await getCivilDetails({ civilNumber: body.civilNumber });
-        
-        if (getCivilData?.status && getCivilData?.data) {
-          civilData = getCivilData.data;
-          logger.info(`Successfully fetched civil data for ${body?.email}`);
-        } else {
-          logger.error(`Civil data fetch failed for ${body?.email}: ${getCivilData?.msg || "Invalid civil data"}`);
-        }
-      } catch (err) {
-        logger.error(`Error fetching civil data from Mala'a API for ${body?.email}:`, err);
-        // Continue registration even if civil data fetch fails
-      }
-    }
+  
 
-let firstName = "", middleName = "", lastName = "";
-let malaaHasName = false;
-const useMalaaData = isOman && civilData;
-if (civilData) {
-  const nameParts = [
-    civilData?.nameOne,
-    civilData?.nameTwo,
-    civilData?.nameThree,
-    civilData?.nameFour,
-    civilData?.nameFive,
-    civilData?.nameSix,
-  ].map(n => n?.trim()).filter(Boolean);
 
-  malaaHasName = nameParts?.length > 0;
-  if (nameParts.length === 1) {
-    firstName = nameParts[0];
-    middleName = "";
-    lastName = "";
-  } else if (nameParts.length === 2) {
-    firstName = nameParts[0];
-    middleName = "";
-    lastName = nameParts[1];
-  } else {
-    firstName = nameParts[0];
-    middleName = nameParts.slice(1, -1).join(" ");
-    lastName = nameParts[nameParts.length - 1];
-  }
-
-}
-
-    // ✅ Determine residence ID type
-    let residenceIDType = residenceTypeOptions.RESIDENT_ID;
-    if (civilData?.nationality?.toLowerCase()?.includes("omani")) {
-      residenceIDType = residenceTypeOptions.NATIONAL_ID;
-    }
+ 
 
 
 

@@ -10,8 +10,7 @@ const {
   otpOnMobileSendCountryCodes,
 } = require("../../../config/enums");
 const logger = require("../../../config/logger");
-const getCivilDetails = require("../../kyc/services/getCivilDetails.service");
-const addInvestorGeneralInfo = require("../../generalInformation/services/addInvestorGeneralInfo.service");
+
 
 const registerUser = async (body) => {
   try {

@@ -1,7 +1,0 @@
-module.exports.addFundsTransaction = require('./addFundsTransaction.controller')
-module.exports.getMyTransactions = require('./getMyTransactions.controller')
-module.exports.verifyTransaction = require('./verifyTransaction.controller')
-module.exports.createCampaignRegFeeTrnx = require('./createCampaignRegFeeTrnx.controller')
-module.exports.getAllTransactions = require('./getAllTransactions.controller')
-module.exports.deleteExpiredTransactions = require('./deleteExpiredTransactions.controller')
-module.exports.payInstallment = require('./payInstallment.controller')

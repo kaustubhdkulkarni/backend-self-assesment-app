@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const httpStatus = require("http-status");
-const config = require("./config/config");
+// const config = require("./config/config");
 const morgan = require("./config/morgan");
 // authentication and error handling
 const session = require("express-session");
@@ -21,22 +21,13 @@ const swaggerUi = require("swagger-ui-express");
 
 const swaggerDocumentPortal = YAML.load("./src/swagger/portal.yaml");
 const swaggerDocumentBackoffice = YAML.load("./src/swagger/backoffice.yaml");
-
+const config= require('./config/config')
 // routes
 const routes = require("./routes");
 const { domainCheckerMiddleware } = require("./middlewares/domainChecker");
-const { addOrUpdateCurrencyRates } = require("./modules/currencies/services");
+
 const logger = require("./config/logger");
-const { checkCampaignTargetRaised } = require("./modules/campaigns/services");
-const { updateRepaymentDueDate } = require("./modules/campaigns/services");
-const {
-  deleteExpiredTransactions,
-} = require("./modules/transactions/services");
-const {
-  updateTotalAmount,
-  updateLateFeeAmount,
-} = require("./modules/fundraiserRepayments/services");
-const updateInvestmentStatus = require("./modules/investments/services/updateInvestmentStatus");
+
 const { resetLoginAttempts } = require("./modules/users/services");
 // const { kycExpiryCheck } = require("./modules/kyc/services");
 // const { sessionStore } = require("./db/db");
