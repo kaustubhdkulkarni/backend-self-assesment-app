@@ -1,0 +1,185 @@
+pipeline {
+    agent any
+    options {
+        skipStagesAfterUnstable()
+        disableRestartFromStage()
+    }
+    tools {
+        nodejs "nodejs"
+    }
+    stages {
+        stage('install') {
+            when {
+                anyOf{
+                    expression{env.BRANCH_NAME == 'production'}
+                    expression{env.BRANCH_NAME == 'main'}
+                }
+            }
+            steps {
+                sh 'npm install --force'
+            }
+        }
+
+        stage('create-env-dev') {
+            when {
+                branch 'production'
+            }
+            environment {
+                WADICI_API_PROD_PORT = credentials("WADICI_API_PROD_PORT")
+                WADICI_API_PROD_REMOTE_BASE_URL = credentials("WADICI_API_PROD_REMOTE_BASE_URL")
+				WADICI_API_PROD_REMOTE_API_URL = credentials("WADICI_API_PROD_REMOTE_API_URL")
+				WADICI_API_PROD_REMOTE_ADMIN_URL = credentials("WADICI_API_PROD_REMOTE_ADMIN_URL")
+				WADICI_API_PROD_DECRYPT_IV = credentials("WADICI_API_PROD_DECRYPT_IV")
+				WADICI_API_PROD_DECRYPT_PASSWORD_SECRETKEY = credentials("WADICI_API_PROD_DECRYPT_PASSWORD_SECRETKEY")
+				WADICI_API_PROD_MAX_LOGIN_ATTENPT = credentials("WADICI_API_PROD_MAX_LOGIN_ATTENPT")
+				WADICI_API_PROD_LOCKING_PERIOD_IN_DAYS = credentials("WADICI_API_PROD_LOCKING_PERIOD_IN_DAYS")
+                WADICI_API_PROD_NODE_ENV = credentials("WADICI_API_PROD_NODE_ENV")
+                WADICI_API_PROD_MYSQL_HOST = credentials("WADICI_API_PROD_MYSQL_HOST")
+                WADICI_API_PROD_MYSQL_USER = credentials("WADICI_API_PROD_MYSQL_USER")
+                WADICI_API_PROD_MYSQL_PASSWORD= credentials("WADICI_API_PROD_MYSQL_PASSWORD")
+                WADICI_API_PROD_MYSQL_DATABASE = credentials("WADICI_API_PROD_MYSQL_DATABASE")
+                WADICI_API_PROD_MYSQL_PORT = credentials("WADICI_API_PROD_MYSQL_PORT")
+                WADICI_API_PROD_APP_MAIL = credentials("WADICI_API_PROD_APP_MAIL")
+                WADICI_API_PROD_APP_MAIL_PASSWORD = credentials("WADICI_API_PROD_APP_MAIL_PASSWORD")
+                WADICI_API_PROD_SMTP_HOST= credentials("WADICI_API_PROD_SMTP_HOST")
+                WADICI_API_PROD_SMTP_PORT = credentials("WADICI_API_PROD_SMTP_PORT")
+				WADICI_API_PROD_PHONE_VERIFY_OTP_EXPIRATION_MINUTES = credentials("WADICI_API_PROD_PHONE_VERIFY_OTP_EXPIRATION_MINUTES")
+				WADICI_API_PROD_EMAIL_VERIFY_OTP_EXPIRATION_MINUTES = credentials("WADICI_API_PROD_EMAIL_VERIFY_OTP_EXPIRATION_MINUTES")
+				WADICI_API_PROD_JWT_SECRET = credentials("WADICI_API_PROD_JWT_SECRET")
+				WADICI_API_PROD_JWT_ACCESS_EXPIRATION_MINUTES = credentials("WADICI_API_PROD_JWT_ACCESS_EXPIRATION_MINUTES")
+				WADICI_API_PROD_JWT_REFRESH_EXPIRATION_DAYS = credentials("WADICI_API_PROD_JWT_REFRESH_EXPIRATION_DAYS")
+				WADICI_API_PROD_JWT_RESET_PASSWORD_EXPIRATION_MINUTES = credentials("WADICI_API_PROD_JWT_RESET_PASSWORD_EXPIRATION_MINUTES")
+				WADICI_API_PROD_JWT_VERIFY_EMAIL_EXPIRATION_MINUTES = credentials("WADICI_API_PROD_JWT_VERIFY_EMAIL_EXPIRATION_MINUTES")
+				WADICI_API_PROD_JWT_INVESTMENT_CONTACT_VERIFY_EXPIRATION_MINUTES = credentials("WADICI_API_PROD_JWT_INVESTMENT_CONTACT_VERIFY_EXPIRATION_MINUTES")
+				WADICI_API_PROD_CHROMIUM_BROWSER_PATH = credentials("WADICI_API_PROD_CHROMIUM_BROWSER_PATH")
+				
+				WADICI_API_PROD_KYC_USERNAME = credentials("WADICI_API_PROD_KYC_USERNAME")
+				WADICI_API_PROD_KYC_PASSWORD = credentials("WADICI_API_PROD_KYC_PASSWORD")
+				WADICI_API_PROD_KYC_ENCRYPT_KEY = credentials("WADICI_API_PROD_KYC_ENCRYPT_KEY")
+				WADICI_API_PROD_KYC_BASE_URL = credentials("WADICI_API_PROD_KYC_BASE_URL")
+				WADICI_API_PROD_MINIO_UPLOAD_URL = credentials("WADICI_API_PROD_MINIO_UPLOAD_URL")
+				
+				WADICI_API_PROD_MINIO_URL = credentials("WADICI_API_PROD_MINIO_URL")
+				WADICI_API_PROD_MINIO_PORT = credentials("WADICI_API_PROD_MINIO_PORT")
+				WADICI_API_PROD_MINIO_BUCKET = credentials("WADICI_API_PROD_MINIO_BUCKET")
+				WADICI_API_PROD_MINIO_ACCESS_KEY = credentials("WADICI_API_PROD_MINIO_ACCESS_KEY")
+				WADICI_API_PROD_MINIO_SECRET_KEY = credentials("WADICI_API_PROD_MINIO_SECRET_KEY")
+				WADICI_API_PROD_MINIO_REGION = credentials("WADICI_API_PROD_MINIO_REGION")
+				
+				WADICI_API_PROD_MAX_FILE_SIZE = credentials("WADICI_API_PROD_MAX_FILE_SIZE")
+		    	WADICI_API_PROD_EXCHANGE_RATE_URL = credentials("WADICI_API_PROD_EXCHANGE_RATE_URL")
+		    	WADICI_API_PROD_EXCHANGE_RATE_APP_ID = credentials("WADICI_API_PROD_EXCHANGE_RATE_APP_ID")
+		    	WADICI_API_PROD_ADMIN_MAIL = credentials("WADICI_API_PROD_ADMIN_MAIL")
+				WADICI_API_PROD_ISMART_USER_ID = credentials("WADICI_API_PROD_ISMART_USER_ID")
+				WADICI_API_PROD_ISMART_PASSWORD = credentials("WADICI_API_PROD_ISMART_PASSWORD")
+		    	WADICI_API_PROD_ISMART_HEADER = credentials("WADICI_API_PROD_ISMART_HEADER")
+                WADICI_API_PROD_ISMART_OTP_ENDPOINT = credentials("WADICI_API_PROD_ISMART_OTP_ENDPOINT")
+				WADICI_API_PROD_SMILE_ID_API_KEY = credentials("WADICI_API_PROD_SMILE_ID_API_KEY")
+                
+				WADICI_API_PROD_SMILE_ID_PARTNER_ID = credentials("WADICI_API_PROD_SMILE_ID_PARTNER_ID")
+				WADICI_API_PROD_SMILE_ID_KYC_API_URL = credentials("WADICI_API_PROD_SMILE_ID_KYC_API_URL")
+				
+				
+		    	WADICI_API_PROD_PAYMOB_API_KEY = credentials("WADICI_API_PROD_PAYMOB_API_KEY")
+		    	WADICI_API_PROD_PAYMOB_INTEGRATION_ID = credentials("WADICI_API_PROD_PAYMOB_INTEGRATION_ID")
+				WADICI_API_PROD_PAYMOB_IFRAME_ID = credentials("WADICI_API_PROD_PAYMOB_IFRAME_ID")
+				WADICI_API_PROD_PAYMOB_BASE_URL = credentials("WADICI_API_PROD_PAYMOB_BASE_URL")
+
+				WADICI_API_PROD_PAYMOB_SECRET_KEY = credentials("WADICI_API_PROD_PAYMOB_SECRET_KEY")
+				WADICI_API_PROD_PAYMOB_PUBLIC_KEY = credentials("WADICI_API_PROD_PAYMOB_PUBLIC_KEY")
+				WADICI_API_PROD_SENDGRID_API_KEY = credentials("WADICI_API_PROD_SENDGRID_API_KEY")
+				WADICI_API_PROD_SENDGRID_FROM = credentials("WADICI_API_PROD_SENDGRID_FROM")
+                BRANCH_NAME = '${env.BRANCH_NAME}'
+            }
+            steps {
+                echo 'Creating Enviorment varibles : '+env.BRANCH_NAME
+                sh '''#!/bin/bash
+                rm -f .env
+                 echo PORT=$WADICI_API_PROD_PORT > .env
+                 echo REMOTE_BASE_URL=$WADICI_API_PROD_REMOTE_BASE_URL >> .env
+				 echo REMOTE_API_URL=$WADICI_API_PROD_REMOTE_API_URL >> .env
+				  echo REMOTE_ADMIN_URL=$WADICI_API_PROD_REMOTE_ADMIN_URL >> .env
+				  echo DECRYPT_IV=$WADICI_API_PROD_DECRYPT_IV >> .env
+				  echo DECRYPT_PASSWORD_SECRETKEY=$WADICI_API_PROD_DECRYPT_PASSWORD_SECRETKEY >> .env
+				  echo MAX_LOGIN_ATTENPT=$WADICI_API_PROD_MAX_LOGIN_ATTENPT >> .env
+				  echo LOCKING_PERIOD_IN_DAYS=$WADICI_API_PROD_LOCKING_PERIOD_IN_DAYS >> .env
+                 echo NODE_ENV=$WADICI_API_PROD_NODE_ENV >> .env
+                 echo MYSQL_HOST=$WADICI_API_PROD_MYSQL_HOST >> .env
+                 echo MYSQL_USER=$WADICI_API_PROD_MYSQL_USER >> .env
+                 echo MYSQL_PASSWORD=$WADICI_API_PROD_MYSQL_PASSWORD>> .env
+                 echo MYSQL_DATABASE=$WADICI_API_PROD_MYSQL_DATABASE >> .env
+                 echo MYSQL_PORT=$WADICI_API_PROD_MYSQL_PORT >> .env
+                 echo APP_MAIL=$WADICI_API_PROD_APP_MAIL >> .env
+                 echo APP_MAIL_PASSWORD=$WADICI_API_PROD_APP_MAIL_PASSWORD >> .env
+                 echo SMTP_HOST=$WADICI_API_PROD_SMTP_HOST>> .env
+                 echo SMTP_PORT=$WADICI_API_PROD_SMTP_PORT >> .env
+                 echo PHONE_VERIFY_OTP_EXPIRATION_MINUTES=$WADICI_API_PROD_PHONE_VERIFY_OTP_EXPIRATION_MINUTES >> .env
+				 echo EMAIL_VERIFY_OTP_EXPIRATION_MINUTES=$WADICI_API_PROD_EMAIL_VERIFY_OTP_EXPIRATION_MINUTES >> .env
+				 echo JWT_SECRET=$WADICI_API_PROD_JWT_SECRET >> .env
+				 echo JWT_ACCESS_EXPIRATION_MINUTES=$WADICI_API_PROD_JWT_ACCESS_EXPIRATION_MINUTES >> .env
+				 echo JWT_REFRESH_EXPIRATION_DAYS=$WADICI_API_PROD_JWT_REFRESH_EXPIRATION_DAYS >> .env
+				 echo JWT_RESET_PASSWORD_EXPIRATION_MINUTES=$WADICI_API_PROD_JWT_RESET_PASSWORD_EXPIRATION_MINUTES >> .env
+				 echo JWT_VERIFY_EMAIL_EXPIRATION_MINUTES=$WADICI_API_PROD_JWT_VERIFY_EMAIL_EXPIRATION_MINUTES >> .env
+				 echo JWT_INVESTMENT_CONTACT_VERIFY_EXPIRATION_MINUTES=$WADICI_API_PROD_JWT_INVESTMENT_CONTACT_VERIFY_EXPIRATION_MINUTES >> .env
+				 echo CHROMIUM_BROWSER_PATH=$WADICI_API_PROD_CHROMIUM_BROWSER_PATH >> .env
+				 echo KYC_USERNAME=$WADICI_API_PROD_KYC_USERNAME >> .env
+				 echo KYC_PASSWORD=$WADICI_API_PROD_KYC_PASSWORD >> .env
+				 echo KYC_ENCRYPT_KEY=$WADICI_API_PROD_KYC_ENCRYPT_KEY >> .env
+				 echo KYC_BASE_URL=$WADICI_API_PROD_KYC_BASE_URL >> .env
+				 echo MINIO_UPLOAD_URL=$WADICI_API_PROD_MINIO_UPLOAD_URL >> .env
+				 echo MINIO_URL=$WADICI_API_PROD_MINIO_URL >> .env
+				 echo MINIO_PORT=$WADICI_API_PROD_MINIO_PORT >> .env
+				 echo MINIO_BUCKET=$WADICI_API_PROD_MINIO_BUCKET >> .env
+				 echo MINIO_ACCESS_KEY=$WADICI_API_PROD_MINIO_ACCESS_KEY >> .env
+				 echo MINIO_SECRET_KEY=$WADICI_API_PROD_MINIO_SECRET_KEY >> .env
+				 echo MINIO_REGION=$WADICI_API_PROD_MINIO_REGION >> .env
+				 echo API_PROD_MAX_FILE_SIZE=$WADICI_API_PROD_MAX_FILE_SIZE >> .env
+     			 echo EXCHANGE_RATE_URL=$WADICI_API_PROD_EXCHANGE_RATE_URL >> .env
+	  			 echo EXCHANGE_RATE_APP_ID=$WADICI_API_PROD_EXCHANGE_RATE_APP_ID >> .env
+                 echo ADMIN_MAIL=$WADICI_API_PROD_ADMIN_MAIL >> .env
+		      	 echo ISMART_USER_ID=$WADICI_API_PROD_ISMART_USER_ID >> .env
+	   			 echo ISMART_PASSWORD=$WADICI_API_PROD_ISMART_PASSWORD >> .env
+				 echo ISMART_HEADER=$WADICI_API_PROD_ISMART_HEADER >> .env
+                 echo ISMART_OTP_ENDPOINT=$WADICI_API_PROD_ISMART_OTP_ENDPOINT >> .env
+				echo SMILE_ID_API_KEY=$WADICI_API_PROD_SMILE_ID_API_KEY >> .env
+				
+				echo SMILE_ID_PARTNER_ID=$WADICI_API_PROD_SMILE_ID_PARTNER_ID >> .env
+				echo SMILE_ID_KYC_API_URL=$WADICI_API_PROD_SMILE_ID_KYC_API_URL >> .env
+				
+				echo PAYMOB_API_KEY=$WADICI_API_PROD_PAYMOB_API_KEY >> .env
+				echo PAYMOB_INTEGRATION_ID=$WADICI_API_PROD_PAYMOB_INTEGRATION_ID >> .env
+				echo PAYMOB_IFRAME_ID=$WADICI_API_PROD_PAYMOB_IFRAME_ID >> .env
+				echo PAYMOB_BASE_URL=$WADICI_API_PROD_PAYMOB_BASE_URL >> .env
+			echo PAYMOB_SECRET_KEY=$WADICI_API_PROD_PAYMOB_SECRET_KEY >> .env
+			echo PAYMOB_PUBLIC_KEY=$WADICI_API_PROD_PAYMOB_PUBLIC_KEY >> .env
+			echo SENDGRID_API_KEY=$WADICI_API_PROD_SENDGRID_API_KEY >> .env
+			echo SENDGRID_FROM=$WADICI_API_PROD_SENDGRID_FROM >> .env
+
+                '''
+            }
+        }
+               stage('deploy-dev') {
+            when {
+                    branch 'production'
+            }
+            environment {
+                    WADICI_API_PROD_IP = credentials("WADICI_API_PROD_IP")
+            }
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(credentialsId: "jenkins-ssl-wadiaa-api", keyFileVariable: 'sshkey')
+                ]) {
+                    echo 'deploying the software'
+                    sh '''#!/bin/bash
+                    echo "Creating .ssh"
+                    mkdir -p /var/lib/jenkins/.ssh
+                    ssh-keyscan ${WADICI_API_PROD_IP} >> /var/lib/jenkins/.ssh/known_hosts
+                    ssh -i $sshkey ubuntu@${WADICI_API_PROD_IP} "mkdir -p /home/ubuntu/backend/$BRANCH_NAME"
+                    rsync -avz --info=progress0,name0,flist0,stats2 --stats --exclude  '.git' --delete -e "ssh -i $sshkey" ./ ubuntu@${WADICI_API_PROD_IP}:/home/ubuntu/backend/$BRANCH_NAME
+                    ssh -i $sshkey ubuntu@${WADICI_API_PROD_IP} "export NVM_DIR=~/.nvm && source ~/.nvm/nvm.sh && if ! nvm ls 20.12.0 >/dev/null 2>&1; then nvm install 20.12.0; fi && nvm use 20.12.0 && if ! command -v pm2 >/dev/null 2>&1; then npm install -g pm2; fi && cd /home/ubuntu/backend/$BRANCH_NAME && pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js && pm2 save"
+                    '''
+                }
+            }
+        }
+    }
+}

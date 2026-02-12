@@ -9,16 +9,32 @@ const successResponseFormat = `${getIpFormat()}:method :url :status - :response-
 const errorResponseFormat = `${getIpFormat()}:method :url :status - :response-time ms - message: :message`;
 
 const successHandler = morgan(successResponseFormat, {
-  skip: (req, res) => res.statusCode >= 400,
-  stream: { write: (message) => logger.info(message.trim()) },
+	skip: (req, res) => res.statusCode >= 400,
+	stream: {
+		write: (message) => {
+			try {
+				logger.info(message.trim());
+			} catch (error) {
+				console.error('Error occurred while logging:', error);
+			}
+		}
+	},
 });
 
 const errorHandler = morgan(errorResponseFormat, {
-  skip: (req, res) => res.statusCode < 400,
-  stream: { write: (message) => logger.error(message.trim()) },
+	skip: (req, res) => res.statusCode < 400,
+	stream: {
+		write: (message) => {
+			try {
+				logger.error(message.trim());
+			} catch (error) {
+				console.error('Error occurred while logging:', error);
+			}
+		}
+	},
 });
 
 module.exports = {
-  successHandler,
-  errorHandler,
+	successHandler,
+	errorHandler,
 };

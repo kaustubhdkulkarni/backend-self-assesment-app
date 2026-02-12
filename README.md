@@ -1,1 +1,0 @@
-# backend-self-assesment-app

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="/api-docs/wadia.svg" />
+    <title>Wadiaa API Documentation</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css">
+</head>
+
+<body>
+    <div class="dropdown-wrapper">
+        <div class="logo" style="color:white;font-weight:900;font-size: 24px;">Wadiaa</div>
+        <div>
+            <span style="color: white; margin-right: 10px;">Select Definition :</span>
+            <select id="definitionSelect" onchange="switchDefinition()">
+                <option value="portal" style="padding: 4px;">Portal</option>
+                <option value="backoffice" style="padding: 4px;">Backoffice</option>
+            </select>
+        </div>
+    </div>
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
+    <script>
+        async function fetchDefinition(definition) {
+            const response = await fetch(`/swagger/${definition}`);
+            return response.json();
+        }
+
+        async function switchDefinition() {
+            const select = document.getElementById('definitionSelect');
+            const definition = select.value;
+
+            try {
+                const spec = await fetchDefinition(definition);
+
+                SwaggerUIBundle({
+                    spec: spec,
+                    dom_id: '#swagger-ui'
+                });
+            } catch (error) {
+                console.error("Error fetching Swagger definition:", error);
+            }
+        }
+
+        window.onload = switchDefinition;
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .swagger-ui .topbar {
+            display: flex;
+            justify-content: space-between;
+            padding-right: 20px;
+        }
+
+        .swagger-ui select {
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #definitionSelect {
+            padding: 10px 40px 10px 10px;
+            width: 330px;
+            cursor: pointer;
+            border-radius: 10px;
+            outline: #71b79a;
+        }
+        
+
+        .dropdown-wrapper {
+            display: flex;
+            padding: 20px;
+            background-color: black;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</body>
+
+</html>

@@ -1,0 +1,3532 @@
+openapi: 3.0.0
+info:
+  title: Wadiaa API Documentation - Portal
+  description: Swagger API's Documentation
+  version: 4.0.1
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+- bearerAuth: []
+
+
+servers:
+- url: http://localhost:3001
+  description: Local Development Server
+
+paths:
+  /v1/users/login:
+    post:
+      summary: Login user
+      tags:
+      - Auth
+      description: Login with email and password.
+      operationId: login-user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "jason@example.com"
+                password:
+                  type: string
+                  example: "Sample@123"
+              required:
+              - email
+              - password
+      responses:
+        "200":
+          description: User details with tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: 94c9a320-ab73-4383-b3c2-c2323d40593f
+                          name:
+                            type: string
+                            example: Shubham3
+                          phone:
+                            type: string
+                            example: 9876543215
+                          email:
+                            type: string
+                            format: email
+                            example: shubham@sdlccorp.com
+                          address:
+                            type: string
+                            nullable: true
+                            example: null
+                          role:
+                            type: string
+                            example: user
+                          active:
+                            type: integer
+                            example: 1
+                          isAccountLocked:
+                            type: integer
+                            example: 0
+                          accountLockingReason:
+                            type: string
+                            nullable: true
+                            example: null
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-17T11:11:08.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-19T09:23:44.000Z"
+                      tokens:
+                        type: object
+                        properties:
+                          access:
+                            type: object
+                            properties:
+                              token:
+                                type: string
+                                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                              expires:
+                                type: string
+                                format: date-time
+                                example: "2024-08-24T06:16:59.184Z"
+                          refresh:
+                            type: object
+                            properties:
+                              token:
+                                type: string
+                                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                              expires:
+                                type: string
+                                format: date-time
+                                example: "2024-09-22T06:16:59.190Z"
+      security: []
+
+  /v1/users/register:
+    post:
+      summary: Register user
+      tags:
+      - Auth
+      description: Register user the following fields.
+      operationId: register-user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: "Test"
+                lastName:
+                  type: string
+                  example: "User"
+                phone:
+                  type: string
+                  example: "9348823934"
+                email:
+                  type: string
+                  format: email
+                  example: "test@example.com"
+                password:
+                  type: string
+                  example: "Sample@123"
+                accountType:
+                  type: string
+                  example: "investor"
+              required:
+              - firstName
+              - lastName
+              - phone
+              - email
+              - password
+              - accountType
+      responses:
+        "200":
+          description: Registered User details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: 94c9a320-ab73-4383-b3c2-c2323d40593f
+                          name:
+                            type: string
+                            example: Shubham3
+                          phone:
+                            type: string
+                            example: 9876543215
+                          email:
+                            type: string
+                            format: email
+                            example: shubham@sdlccorp.com
+                          address:
+                            type: string
+                            nullable: true
+                            example: null
+                          role:
+                            type: string
+                            example: user
+                          active:
+                            type: integer
+                            example: 1
+                          isAccountLocked:
+                            type: integer
+                            example: 0
+                          accountLockingReason:
+                            type: string
+                            nullable: true
+                            example: null
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-17T11:11:08.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-19T09:23:44.000Z"
+                      msg:
+                        type: string
+                        example: "User Registered Successfully"
+      security: []
+
+  /v1/auth/verify-email:
+    get:
+      summary: Verify user email
+      tags:
+      - Auth
+      description: Verify user email.
+      operationId: verify-user-email
+      parameters:
+      - name: token
+        in: query
+        description: Token for authentication
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Verify User email
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Email verified successfully."
+      security: []
+
+  /v1/otp/send:
+    post:
+      summary: Send Otp for phone verification
+      tags:
+      - Auth
+      description: Send otp for user phone.
+      operationId: send-otp-for-verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phoneNumber:
+                  type: string
+                  example: "9604514363"
+              required:
+              - phoneNumber
+      responses:
+        "200":
+          description: Send otp for user phone.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "An OTP has been send to verify your phone number."
+      security: []
+
+  /v1/otp/verify:
+    post:
+      summary: Verify Otp for phone verification
+      tags:
+      - Auth
+      description: Verify otp for user phone.
+      operationId: verify-otp-phone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phoneNumber:
+                  type: string
+                  example: "9604514363"
+                otpCode:
+                  type: integer
+                  example: 880645
+              required:
+              - phoneNumber
+              - otpCode
+      responses:
+        "200":
+          description: Verify otp for user phone.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "An OTP has been send to verify your phone number."
+      security: []
+
+  /v1/users/:
+    put:
+      summary: Update User
+      tags:
+      - Users
+      description: Update User.
+      operationId: update-user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: "Test"
+                lastName:
+                  type: string
+                  example: "User"
+                subRoleId:
+                  type: string
+                  example: "52f85dfeb523"
+      responses:
+        "200":
+          description: User update.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "User update successfully."
+      security:
+      - bearerAuth: []
+
+  /v1/sub-roles/:
+    get:
+      summary: Fetch All User subroles
+      tags:
+      - Users
+      description: Get all user subroles.
+      operationId: get-all-subroles
+      responses:
+        "200":
+          description: User subroles fetched successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      subRoles:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: string
+                              example: "uuid"
+                            subRoleName:
+                              type: string
+                              example: "sophisticated_investor"
+                            createdAt:
+                              type: string
+                              format: date-time
+                              example: "2024-09-06T06:27:46.000Z"
+                            updatedAt:
+                              type: string
+                              format: date-time
+                              example: "2024-09-06T06:27:46.000Z"
+      security:
+      - bearerAuth: []
+
+  /v1/general-info/investor:
+    post:
+      summary: Add regular investor general information
+      tags:
+      - General Information
+      description: Add general information for regular investor type.
+      operationId: add-investor-general-info
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: "Ram"
+                lastName:
+                  type: string
+                  example: "Singh"
+                email:
+                  type: string
+                  format: email
+                  example: "joe@example.com"
+                contactNumber:
+                  type: string
+                  example: "+919938942523"
+                residenceCountry:
+                  type: string
+                  example: "United Kingdom"
+                birthDate:
+                  type: string
+                  format: date
+                  example: "2000-08-20"
+                birthPlace:
+                  type: string
+                  example: "London"
+                residenceIDType:
+                  type: string
+                  example: "ID_CARD"
+                residenceIDNumber:
+                  type: string
+                  example: "ABC123"
+                residenceIDCountry:
+                  type: string
+                  example: "United Kingdom"
+                expiryDateOfID:
+                  type: string
+                  format: date
+                  example: "2025-09-26"
+                taxIDNumber:
+                  type: string
+                  example: "XYZ987"
+                gender:
+                  type: string
+                  example: "male"
+                nationality:
+                  type: string
+                  example: "UK citizen"
+                education:
+                  type: string
+                  example: "MBA"
+                occupationPersonName:
+                  type: string
+                  example: "Sam Wilson"
+                occupationPersonAddress:
+                  type: string
+                  example: "United Kingdom"
+                occupationContactNumber:
+                  type: string
+                  example: "+919876543210"
+                occupationEmploymentType:
+                  type: string
+                  example: "SALARIED"
+                occupation:
+                  type: string
+                  example: "Website Development"
+                alternateContactName:
+                  type: string
+                  example: "Steve Rogers"
+                alternateContactEmail:
+                  type: string
+                  format: email
+                  example: "steve@gmail.com"
+                alternateContactNumber:
+                  type: string
+                  example: "+911234567890"
+                designationAlternatePerson:
+                  type: string
+                  example: "Developer"
+      responses:
+        "200":
+          description: "General information added successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "General information added successfully."
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update regular investor general information
+      tags:
+      - General Information
+      description: Update general information for regular investor type.
+      operationId: update-investor-general-info
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: "Ram"
+                lastName:
+                  type: string
+                  example: "Singh"
+                email:
+                  type: string
+                  format: email
+                  example: "joe@example.com"
+                contactNumber:
+                  type: string
+                  example: "+919938942523"
+                residenceCountry:
+                  type: string
+                  example: "United Kingdom"
+                birthDate:
+                  type: string
+                  format: date
+                  example: "2000-08-20"
+                birthPlace:
+                  type: string
+                  example: "London"
+                residenceIDType:
+                  type: string
+                  example: "ID_CARD"
+                residenceIDNumber:
+                  type: string
+                  example: "ABC123"
+                residenceIDCountry:
+                  type: string
+                  example: "United Kingdom"
+                expiryDateOfID:
+                  type: string
+                  format: date
+                  example: "2025-09-26"
+                taxIDNumber:
+                  type: string
+                  example: "XYZ987"
+                gender:
+                  type: string
+                  example: "male"
+                nationality:
+                  type: string
+                  example: "UK citizen"
+                education:
+                  type: string
+                  example: "MBA"
+                occupationPersonName:
+                  type: string
+                  example: "Sam Wilson"
+                occupationPersonAddress:
+                  type: string
+                  example: "United Kingdom"
+                occupationContactNumber:
+                  type: string
+                  example: "+919876543210"
+                occupationEmploymentType:
+                  type: string
+                  example: "SALARIED"
+                occupation:
+                  type: string
+                  example: "Website Development"
+                alternateContactName:
+                  type: string
+                  example: "Steve Rogers"
+                alternateContactEmail:
+                  type: string
+                  format: email
+                  example: "steve@gmail.com"
+                alternateContactNumber:
+                  type: string
+                  example: "+911234567890"
+                designationAlternatePerson:
+                  type: string
+                  example: "Developer"
+      responses:
+        "200":
+          description: "General information updated."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "General information updated."
+      security:
+      - bearerAuth: []
+
+  /v1/general-info/business-investor:
+    post:
+      summary: Add business investor general information
+      tags:
+      - General Information
+      description: Add general information for business investor type.
+      operationId: add-business-investor-general-info
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                legalNameOfCompany:
+                  type: string
+                  example: "SDLCCORP"
+                legalTypeOfCompany:
+                  type: string
+                  example: "General_partnership"
+                sectorOfCompany:
+                  type: string
+                  example: "IT"
+                companyRegisteredCountry:
+                  type: string
+                  example: "India"
+                companyEstablishmentDate:
+                  type: string
+                  format: date
+                  example: "2019-09-10"
+                natureOfCompany:
+                  type: string
+                  example: "IT"
+                registrationNumberOfCompany:
+                  type: string
+                  example: "ABC123"
+                expiryDateOfCompany:
+                  type: string
+                  format: date
+                  example: "2050-04-29"
+                taxIdOfCompany:
+                  type: string
+                  example: "sdcwe243"
+                noOfEmployeeInCompany:
+                  type: integer
+                  example: 150
+                companyContactNumber:
+                  type: string
+                  example: "+9199238983234"
+                companyEmailId:
+                  type: string
+                  example: "sdlc@sdlccorp.com"
+                ownershipChangedLast5Years:
+                  type: boolean
+                  example: true
+                legalTypeChangeInLast5Years:
+                  type: boolean
+                  example: true
+                alternateContactName:
+                  type: string
+                  example: "Kishan"
+                alternateContactEmail:
+                  type: string
+                  format: email
+                  example: "sdlc@sdlccorp.com"
+                alternateContactNumber:
+                  type: string
+                  example: "+912839493203"
+                designationAlternatePerson:
+                  type: string
+                  example: "Owner"
+      responses:
+        "200":
+          description: "General information added successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "General information added successfully."
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update business investor general information
+      tags:
+      - General Information
+      description: Update general information for business investor type.
+      operationId: update-business-investor-general-info
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                legalNameOfCompany:
+                  type: string
+                  example: "SDLCCORP"
+                legalTypeOfCompany:
+                  type: string
+                  example: "General_partnership"
+                sectorOfCompany:
+                  type: string
+                  example: "IT"
+                companyRegisteredCountry:
+                  type: string
+                  example: "India"
+                companyEstablishmentDate:
+                  type: string
+                  format: date
+                  example: "2019-09-10"
+                natureOfCompany:
+                  type: string
+                  example: "IT"
+                registrationNumberOfCompany:
+                  type: string
+                  example: "ABC123"
+                expiryDateOfCompany:
+                  type: string
+                  format: date
+                  example: "2050-04-29"
+                taxIdOfCompany:
+                  type: string
+                  example: "sdcwe243"
+                noOfEmployeeInCompany:
+                  type: integer
+                  example: 150
+                companyContactNumber:
+                  type: string
+                  example: "+9199238983234"
+                companyEmailId:
+                  type: string
+                  example: "sdlc@sdlccorp.com"
+                ownershipChangedLast5Years:
+                  type: boolean
+                  example: true
+                legalTypeChangeInLast5Years:
+                  type: boolean
+                  example: true
+                alternateContactName:
+                  type: string
+                  example: "Kishan"
+                alternateContactEmail:
+                  type: string
+                  format: email
+                  example: "sdlc@sdlccorp.com"
+                alternateContactNumber:
+                  type: string
+                  example: "+912839493203"
+                designationAlternatePerson:
+                  type: string
+                  example: "Owner"
+      responses:
+        "200":
+          description: "General information updated."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "General information updated."
+      security:
+      - bearerAuth: []
+
+  /v1/general-info/institutional-investor:
+    post:
+      summary: Add institutional investor general information
+      tags:
+      - General Information
+      description: Add general information for institutional investor type.
+      operationId: add-institutional-investor-general-info
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                legalNameOfCompany:
+                  type: string
+                  example: "SDLCCORP"
+                legalTypeOfCompany:
+                  type: string
+                  example: "General_partnership"
+                sectorOfCompany:
+                  type: string
+                  example: "IT"
+                companyRegisteredCountry:
+                  type: string
+                  example: "India"
+                companyEstablishmentDate:
+                  type: string
+                  format: date
+                  example: "2019-09-10"
+                natureOfCompany:
+                  type: string
+                  example: "IT"
+                registrationNumberOfCompany:
+                  type: string
+                  example: "ABC123"
+                expiryDateOfCompany:
+                  type: string
+                  format: date
+                  example: "2050-04-29"
+                taxIdOfCompany:
+                  type: string
+                  example: "sdcwe243"
+                noOfEmployeeInCompany:
+                  type: integer
+                  example: 150
+                companyContactNumber:
+                  type: string
+                  example: "+9199238983234"
+                companyEmailId:
+                  type: string
+                  example: "sdlc@sdlccorp.com"
+                ownershipChangedLast5Years:
+                  type: boolean
+                  example: true
+                legalTypeChangeInLast5Years:
+                  type: boolean
+                  example: true
+                alternateContactName:
+                  type: string
+                  example: "Kishan"
+                alternateContactEmail:
+                  type: string
+                  format: email
+                  example: "sdlc@sdlccorp.com"
+                alternateContactNumber:
+                  type: string
+                  example: "+912839493203"
+                designationAlternatePerson:
+                  type: string
+                  example: "Owner"
+      responses:
+        "200":
+          description: "General information added successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "General information added successfully."
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update institutional investor general information
+      tags:
+      - General Information
+      description: Update general information for institutional investor type.
+      operationId: update-institutional-investor-general-info
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                legalNameOfCompany:
+                  type: string
+                  example: "SDLCCORP"
+                legalTypeOfCompany:
+                  type: string
+                  example: "General_partnership"
+                sectorOfCompany:
+                  type: string
+                  example: "IT"
+                companyRegisteredCountry:
+                  type: string
+                  example: "India"
+                companyEstablishmentDate:
+                  type: string
+                  format: date
+                  example: "2019-09-10"
+                natureOfCompany:
+                  type: string
+                  example: "IT"
+                registrationNumberOfCompany:
+                  type: string
+                  example: "ABC123"
+                expiryDateOfCompany:
+                  type: string
+                  format: date
+                  example: "2050-04-29"
+                taxIdOfCompany:
+                  type: string
+                  example: "sdcwe243"
+                noOfEmployeeInCompany:
+                  type: integer
+                  example: 150
+                companyContactNumber:
+                  type: string
+                  example: "+9199238983234"
+                companyEmailId:
+                  type: string
+                  example: "sdlc@sdlccorp.com"
+                ownershipChangedLast5Years:
+                  type: boolean
+                  example: true
+                legalTypeChangeInLast5Years:
+                  type: boolean
+                  example: true
+                alternateContactName:
+                  type: string
+                  example: "Kishan"
+                alternateContactEmail:
+                  type: string
+                  format: email
+                  example: "sdlc@sdlccorp.com"
+                alternateContactNumber:
+                  type: string
+                  example: "+912839493203"
+                designationAlternatePerson:
+                  type: string
+                  example: "Owner"
+      responses:
+        "200":
+          description: "General information updated."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "General information updated."
+      security:
+      - bearerAuth: []
+
+  /v1/general-info/:
+    get:
+      summary: Get general information of user
+      tags:
+      - General Information
+      description: Get general information.
+      operationId: get-my-general-info
+      responses:
+        "200":
+          description: Fetch user general information.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: uuid
+                      userId:
+                        type: string
+                        format: uuid
+                        example: uuid
+                      isGeneralInformationCompleted:
+                        type: boolean
+                        example: true
+                      firstName:
+                        type: string
+                        example: string
+                      lastName:
+                        type: string
+                        example: string
+                      email:
+                        type: string
+                        format: email
+                        example: string
+                      contactNumber:
+                        type: string
+                        example: string
+                      residenceCountry:
+                        type: string
+                        example: string
+                      birthDate:
+                        type: string
+                        format: date-time
+                        example: "2000-08-20T00:00:00.000Z"
+                      birthPlace:
+                        type: string
+                        example: string
+                      residenceIDType:
+                        type: string
+                        example: string
+                      residenceIDNumber:
+                        type: string
+                        example: string
+                      residenceIDCountry:
+                        type: string
+                        example: string
+                      expiryDateOfID:
+                        type: string
+                        format: date-time
+                        example: "2025-09-26T00:00:00.000Z"
+                      taxIDNumber:
+                        type: string
+                        example: string
+                      gender:
+                        type: string
+                        example: string
+                      nationality:
+                        type: string
+                        example: string
+                      education:
+                        type: string
+                        example: string
+                      occupationPersonName:
+                        type: string
+                        example: string
+                      occupationPersonAddress:
+                        type: string
+                        example: string
+                      occupationContactNumber:
+                        type: string
+                        example: string
+                      occupationEmploymentType:
+                        type: string
+                        example: string
+                      occupation:
+                        type: string
+                        example: string
+                      alternateContactName:
+                        type: string
+                        example: string
+                      alternateContactEmail:
+                        type: string
+                        format: email
+                        example: string
+                      alternateContactNumber:
+                        type: string
+                        example: string
+                      designationAlternatePerson:
+                        type: string
+                        example: string
+                      legalNameOfCompany:
+                        type: string
+                        example: string
+                      legalTypeOfCompany:
+                        type: string
+                        example: string
+                      sectorOfCompany:
+                        type: string
+                        example: string
+                      companyRegisteredCountry:
+                        type: string
+                        example: string
+                      companyEstablishmentDate:
+                        type: string
+                        format: date-time
+                        example: "2019-09-10T00:00:00.000Z"
+                      natureOfCompany:
+                        type: string
+                        example: string
+                      registrationNumberOfCompany:
+                        type: string
+                        example: string
+                      expiryDateOfCompany:
+                        type: string
+                        format: date-time
+                        example: "2050-04-29T00:00:00.000Z"
+                      taxIdOfCompany:
+                        type: string
+                        example: string
+                      noOfEmployeeInCompany:
+                        type: integer
+                        example: 150
+                      companyContactNumber:
+                        type: string
+                        example: string
+                      companyEmailId:
+                        type: string
+                        example: string
+                      ownershipChangedLast5Years:
+                        type: boolean
+                        example: true
+                      legalTypeChangeInLast5Years:
+                        type: boolean
+                        example: true
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: "2024-09-09T13:01:52.000Z"
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: "2024-09-09T13:01:52.000Z"
+                      userObj:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          firstName:
+                            type: string
+                            example: string
+                          lastName:
+                            type: string
+                            example: string
+                          phone:
+                            type: string
+                            example: string
+                          email:
+                            type: string
+                            format: email
+                            example: string
+                          role:
+                            type: string
+                            example: string
+                          active:
+                            type: boolean
+                            example: true
+                          isAccountLocked:
+                            type: boolean
+                            example: false
+                          accountLockingReason:
+                            type: string
+                            example: string
+                          isMobileVerified:
+                            type: boolean
+                            example: true
+                          isEmailVerified:
+                            type: boolean
+                            example: true
+                          accountType:
+                            type: string
+                            example: "investor"
+                          subRoleId:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T10:57:22.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T13:01:30.000Z"
+                          subRoleObj:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: string
+                              subRoleName:
+                                type: string
+                                example: "regular_investor"
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+      security:
+      - bearerAuth: []
+
+  /v1/contact-details/:
+    get:
+      summary: Get contact details User
+      tags:
+      - Contact Details
+      description: Get contact details.
+      operationId: get-my-contact-detail
+      responses:
+        "200":
+          description: Fetch User contact details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: uuid
+                      userId:
+                        type: string
+                        format: uuid
+                        example: string
+                      isContactDetailsCompleted:
+                        type: boolean
+                        example: true
+                      officeNumber:
+                        type: string
+                        example: string
+                      buildingName:
+                        type: string
+                        example: string
+                      streetName:
+                        type: string
+                        example: string
+                      poBox:
+                        type: string
+                        example: string
+                      postalCode:
+                        type: string
+                        example: string
+                      city:
+                        type: string
+                        example: string
+                      state:
+                        type: string
+                        example: string
+                      country:
+                        type: string
+                        example: string
+                      permanentAddress:
+                        type: string
+                        example: string
+                      permanentPostalCode:
+                        type: string
+                        example: string
+                      permanentRegisteredCountry:
+                        type: string
+                        example: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: "2024-08-17T11:11:08.000Z"
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: "2024-08-19T09:23:44.000Z"
+                      userObj:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          firstName:
+                            type: string
+                            example: string
+                          lastName:
+                            type: string
+                            example: string
+                          phone:
+                            type: string
+                            example: string
+                          email:
+                            type: string
+                            format: email
+                            example: string
+                          role:
+                            type: string
+                            example: user
+                          active:
+                            type: boolean
+                            example: true
+                          isAccountLocked:
+                            type: boolean
+                            example: false
+                          accountLockingReason:
+                            type: string
+                            nullable: true
+                            example: string
+                          isMobileVerified:
+                            type: boolean
+                            example: false
+                          isEmailVerified:
+                            type: boolean
+                            example: false
+                          accountType:
+                            type: string
+                            example: "investor"
+                          subRoleId:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-17T11:11:08.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-19T09:23:44.000Z"
+                          subRoleObj:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: uuid
+                              subRoleName:
+                                type: string
+                                example: "regular_investor"
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: "2024-08-17T11:11:08.000Z"
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: "2024-08-19T09:23:44.000Z"
+
+      security:
+      - bearerAuth: []
+
+    post:
+      summary: Add contact details of user
+      tags:
+      - Contact Details
+      description: Add contact details.
+      operationId: add-investor-contact-detail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                officeNumber:
+                  type: string
+                  example: string
+                buildingName:
+                  type: string
+                  example: string
+                streetName:
+                  type: string
+                  example: string
+                poBox:
+                  type: string
+                  example: string
+                postalCode:
+                  type: string
+                  example: string
+                city:
+                  type: string
+                  example: string
+                state:
+                  type: string
+                  example: string
+                country:
+                  type: string
+                  example: string
+                permanentAddress:
+                  type: string
+                  example: string
+                permanentPostalCode:
+                  type: string
+                  example: string
+                permanentRegisteredCountry:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Add User contact details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Contact details added successfully."
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update contact details of user
+      tags:
+      - Contact Details
+      description: Update contact details.
+      operationId: update-my-contact-detail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                officeNumber:
+                  type: string
+                  example: string
+                buildingName:
+                  type: string
+                  example: string
+                streetName:
+                  type: string
+                  example: string
+                poBox:
+                  type: string
+                  example: string
+                postalCode:
+                  type: string
+                  example: string
+                city:
+                  type: string
+                  example: string
+                state:
+                  type: string
+                  example: string
+                country:
+                  type: string
+                  example: string
+                permanentAddress:
+                  type: string
+                  example: string
+                permanentPostalCode:
+                  type: string
+                  example: string
+                permanentRegisteredCountry:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Update User contact details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Contact details updated successfully."
+      security:
+      - bearerAuth: []
+
+  /v1/financial-details/investor:
+    post:
+      summary: Add Financial details of user
+      tags:
+      - Financial Details
+      description: Add financial details.
+      operationId: add-investor-financial-detail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  example: string
+                primarySourceOfIncome:
+                  type: string
+                  example: string
+                totalJointAssetValue:
+                  type: integer
+                  example: 0
+                totalPersonalAssetValue:
+                  type: integer
+                  example: 0
+                totalWealthOwned:
+                  type: integer
+                  example: 0
+                grossAnnualIncome:
+                  type: integer
+                  example: 0
+                grossAnnualInvestment:
+                  type: integer
+                  example: 0
+      responses:
+        "200":
+          description: Add User financial details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Financial detail added successfully."
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update Financial details of regular investor
+      tags:
+      - Financial Details
+      description: Update Financial details of regular investor.
+      operationId: update-investor-financial-detail
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  example: string
+                primarySourceOfIncome:
+                  type: string
+                  example: string
+                totalJointAssetValue:
+                  type: integer
+                  example: 0
+                totalPersonalAssetValue:
+                  type: integer
+                  example: 0
+                totalWealthOwned:
+                  type: integer
+                  example: 0
+                grossAnnualIncome:
+                  type: integer
+                  example: 0
+                grossAnnualInvestment:
+                  type: integer
+                  example: 0
+      responses:
+        "200":
+          description: Update Financial details of regular investor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Financial detail updated successfully."
+
+
+                  msg: "Financial detail updated."
+      security:
+      - bearerAuth: []
+
+  /v1/financial-details/business-investor:
+    post:
+      summary: Add Financial details of business investor.
+      tags:
+      - Financial Details
+      description: Add Financial details of business investor.
+      operationId: add-business-investor-financial-detail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  example: string
+                primarySourceOfIncome:
+                  type: string
+                  example: string
+                projectedValueOfCompany:
+                  type: integer
+                  example: 0
+                totalAnnualRevenueOfCompany:
+                  type: integer
+                  example: 0
+                totalAssestValueOfCompany:
+                  type: integer
+                  example: 0
+                parentCompanyName:
+                  type: string
+                  example: string
+                parentCompanyAddress:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Add Financial details of business investor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Add financial detail added successfully."
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update Financial details of business investor.
+      tags:
+      - Financial Details
+      description: Update Financial details of business investor.
+      operationId: update-business-investor-financial-detail
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  example: string
+                primarySourceOfIncome:
+                  type: string
+                  example: string
+                projectedValueOfCompany:
+                  type: integer
+                  example: 0
+                totalAnnualRevenueOfCompany:
+                  type: integer
+                  example: 0
+                totalAssestValueOfCompany:
+                  type: integer
+                  example: 0
+                parentCompanyName:
+                  type: string
+                  example: string
+                parentCompanyAddress:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Update Financial details of business investor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Financial detail updated successfully."
+      security:
+      - bearerAuth: []
+
+  /v1/financial-details/institutional-investor:
+    post:
+      summary: Add Financial details of institutional investor.
+      tags:
+      - Financial Details
+      description: Add Financial details of institutional investor.
+      operationId: add-institutional-investor-financial-detail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  example: string
+                primarySourceOfIncome:
+                  type: string
+                  example: string
+                projectedValueOfCompany:
+                  type: integer
+                  example: 0
+                totalAnnualRevenueOfCompany:
+                  type: integer
+                  example: 0
+                totalAssestValueOfCompany:
+                  type: integer
+                  example: 0
+                parentCompanyName:
+                  type: string
+                  example: string
+                parentCompanyAddress:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Add Financial details of institutional investor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Financial detail added successfully."
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update Financial details of institutional investor.
+      tags:
+      - Financial Details
+      description: Update Financial details of institutional investor.
+      operationId: update-institutional-investor-financial-detail
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  example: string
+                primarySourceOfIncome:
+                  type: string
+                  example: string
+                projectedValueOfCompany:
+                  type: integer
+                  example: 0
+                totalAnnualRevenueOfCompany:
+                  type: integer
+                  example: 0
+                totalAssestValueOfCompany:
+                  type: integer
+                  example: 0
+                parentCompanyName:
+                  type: string
+                  example: string
+                parentCompanyAddress:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Update Financial details of institutional investor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Financial detail updated successfully."
+      security:
+      - bearerAuth: []
+
+  /v1/financial-details/:
+    get:
+      summary: Get Financial details of investor.
+      tags:
+      - Financial Details
+      description: Get Financial details of investor.
+      operationId: get-my-financial-detail
+      responses:
+        "200":
+          description: Get Financial details of investor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: uuid
+                      userId:
+                        type: string
+                        format: uuid
+                        example: uuid
+                      isFinancialDetailCompleted:
+                        type: boolean
+                        example: true
+                      currency:
+                        type: string
+                        example: string
+                      primarySourceOfIncome:
+                        type: string
+                        example: string
+                      totalJointAssetValue:
+                        type: integer
+                        example: 0
+                      totalPersonalAssetValue:
+                        type: integer
+                        example: 0
+                      totalWealthOwned:
+                        type: integer
+                        example: 0
+                      grossAnnualIncome:
+                        type: integer
+                        example: 0
+                      grossAnnualInvestment:
+                        type: integer
+                        example: 0
+                      projectedValueOfCompany:
+                        type: integer
+                        example: 0
+                      totalAnnualRevenueOfCompany:
+                        type: integer
+                        example: 0
+                      totalAssestValueOfCompany:
+                        type: integer
+                        example: 0
+                      parentCompanyName:
+                        type: string
+                        example: string
+                      parentCompanyAddress:
+                        type: string
+                        example: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: "2000-08-20T00:00:00.000Z"
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: "2000-08-20T00:00:00.000Z"
+                      userObj:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          firstName:
+                            type: string
+                            example: string
+                          lastName:
+                            type: string
+                            example: string
+                          phone:
+                            type: string
+                            example: string
+                          email:
+                            type: string
+                            format: email
+                            example: string
+                          role:
+                            type: string
+                            example: string
+                          active:
+                            type: boolean
+                            example: true
+                          isAccountLocked:
+                            type: boolean
+                            example: false
+                          accountLockingReason:
+                            type: string
+                            example: string
+                          isMobileVerified:
+                            type: boolean
+                            example: true
+                          isEmailVerified:
+                            type: boolean
+                            example: true
+                          accountType:
+                            type: string
+                            example: "investor"
+                          subRoleId:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T10:57:22.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T13:01:30.000Z"
+                          subRoleObj:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: string
+                              subRoleName:
+                                type: string
+                                example: "regular_investor"
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+      security:
+      - bearerAuth: []
+
+  /v1/bank-details/:
+    post:
+      summary: Add investor bank details
+      tags:
+      - Bank Details
+      description: Add bank details for investor.
+      operationId: add-investor-bank-detail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isMasterAccountDetails:
+                  type: boolean
+                  example: true
+                isAccountStatusActive:
+                  type: boolean
+                  example: false
+                isDividentAccountDetails:
+                  type: boolean
+                  example: false
+                bankAccountNumber:
+                  type: string
+                  example: "ADWD43234F"
+                accountOpeningDate:
+                  type: string
+                  format: date
+                  example: "2014-08-15"
+                bankName:
+                  type: string
+                  example: "ICICI"
+                bankAddress:
+                  type: string
+                  example: "Mumbai 423023"
+                bankRoutingCode:
+                  type: string
+                  example: "CSA32"
+                currency:
+                  type: string
+                  example: "INR"
+      responses:
+        "200":
+          description: "Bank details added successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Bank details added successfully."
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: update investor bank details
+      tags:
+      - Bank Details
+      description: update bank details for investor.
+      operationId: update-investor-bank-detail
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isMasterAccountDetails:
+                  type: boolean
+                  example: true
+                isAccountStatusActive:
+                  type: boolean
+                  example: false
+                isDividentAccountDetails:
+                  type: boolean
+                  example: false
+                bankAccountNumber:
+                  type: string
+                  example: "ADWD43234F"
+                accountOpeningDate:
+                  type: string
+                  format: date
+                  example: "2014-08-15"
+                bankName:
+                  type: string
+                  example: "ICICI"
+                bankAddress:
+                  type: string
+                  example: "Mumbai 423023"
+                bankRoutingCode:
+                  type: string
+                  example: "CSA32"
+                currency:
+                  type: string
+                  example: "INR"
+      responses:
+        "200":
+          description: "Bank details added successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Bank details added successfully."
+      security:
+      - bearerAuth: []
+
+    get:
+      summary: Get bank details for User
+      tags:
+      - Bank Details
+      description: Get bank details.
+      operationId: get-my-bank-detail
+      responses:
+        "200":
+          description: Fetch User bank details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: uuid
+                      userId:
+                        type: string
+                        format: uuid
+                        example: uuid
+                      isBankDetailCompleted:
+                        type: boolean
+                        example: true
+                      isAccountStatusActive:
+                        type: boolean
+                        example: false
+                      isMasterAccountDetails:
+                        type: boolean
+                        example: true
+                      isDividentAccountDetails:
+                        type: boolean
+                        example: false
+                      bankAccountNumber:
+                        type: string
+                        example: string
+                      accountOpeningDate:
+                        type: string
+                        format: date-time
+                        example: "2014-08-15T00:00:00.000Z"
+                      bankName:
+                        type: string
+                        example: string
+                      bankAddress:
+                        type: string
+                        example: string
+                      bankRoutingCode:
+                        type: string
+                        example: string
+                      currency:
+                        type: string
+                        example: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: "2024-09-11T09:21:44.000Z"
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: "2024-09-11T09:33:02.000Z"
+                      userObj:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          firstName:
+                            type: string
+                            example: string
+                          lastName:
+                            type: string
+                            example: string
+                          phone:
+                            type: string
+                            example: string
+                          email:
+                            type: string
+                            format: email
+                            example: string
+                          role:
+                            type: string
+                            example: string
+                          active:
+                            type: boolean
+                            example: true
+                          isAccountLocked:
+                            type: boolean
+                            example: false
+                          accountLockingReason:
+                            type: string
+                            example: string
+                          isMobileVerified:
+                            type: boolean
+                            example: true
+                          isEmailVerified:
+                            type: boolean
+                            example: true
+                          accountType:
+                            type: string
+                            example: string
+                          subRoleId:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T10:57:22.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T13:01:30.000Z"
+                          subRoleObj:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: string
+                              subRoleName:
+                                type: string
+                                example: string
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+      security:
+      - bearerAuth: []
+
+  /v1/company-management/members:
+    post:
+      summary: Add Company members
+      tags:
+      - Company Management
+      description: Add company members.
+      operationId: add-company-member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: string
+                residentialAddressAndPO:
+                  type: string
+                  example: string
+                countryOfResidence:
+                  type: string
+                  example: string
+                residencyIdentificationType:
+                  type: string
+                  example: string
+                dateOfBirth:
+                  type: string
+                  format: date-time
+                  example: "2014-08-15T00:00:00.000Z"
+                position:
+                  type: string
+                  example: string
+                nationality:
+                  type: string
+                  example: string
+                civilResidentCardNo:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Add company member.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Company member added successfully."
+      security:
+      - bearerAuth: []
+
+    get:
+      summary: Get Company members
+      tags:
+      - Company Management
+      description: Get company members.
+      operationId: get-company-members
+      responses:
+        "200":
+          description: Get company members.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: string
+                          example: "uuid"
+                        userId:
+                          type: string
+                          example: "uuid"
+                        isCompanyMemberCompleted:
+                          type: boolean
+                          example: true
+                        fullName:
+                          type: string
+                          example: string
+                        residentialAddressAndPO:
+                          type: string
+                          example: string
+                        dateOfBirth:
+                          type: string
+                          format: date-time
+                          example: "2014-08-15T00:00:00.000Z"
+                        countryOfResidence:
+                          type: string
+                          example: string
+                        residencyIdentificationType:
+                          type: string
+                          example: string
+                        position:
+                          type: string
+                          example: string
+                        nationality:
+                          type: string
+                          example: string
+                        civilResidentCardNo:
+                          type: string
+                          example: string
+                        residencyCardOrPassportNo:
+                          type: string
+                          example: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: "2024-08-17T11:11:08.000Z"
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          example: "2024-08-19T09:23:44.000Z"
+                        userObj:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                              example: uuid
+                            firstName:
+                              type: string
+                              example: string
+                            lastName:
+                              type: string
+                              example: string
+                            phone:
+                              type: string
+                              example: string
+                            email:
+                              type: string
+                              format: email
+                              example: string
+                            role:
+                              type: string
+                              example: string
+                            active:
+                              type: boolean
+                              example: true
+                            isAccountLocked:
+                              type: boolean
+                              example: false
+                            accountLockingReason:
+                              type: string
+                              example: string
+                            isMobileVerified:
+                              type: boolean
+                              example: true
+                            isEmailVerified:
+                              type: boolean
+                              example: true
+                            accountType:
+                              type: string
+                              example: "investor"
+                            subRoleId:
+                              type: string
+                              format: uuid
+                              example: uuid
+                            createdAt:
+                              type: string
+                              format: date-time
+                              example: "2024-09-09T10:57:22.000Z"
+                            updatedAt:
+                              type: string
+                              format: date-time
+                              example: "2024-09-09T13:01:30.000Z"
+                            subRoleObj:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                  example: string
+                                subRoleName:
+                                  type: string
+                                  example: "regular_investor"
+                                createdAt:
+                                  type: string
+                                  format: date-time
+                                  example: "2024-09-05T10:50:13.000Z"
+                                updatedAt:
+                                  type: string
+                                  format: date-time
+                                  example: "2024-09-05T10:50:13.000Z"
+
+      security:
+      - bearerAuth: []
+
+  /v1/company-management/member/{id}:
+    get:
+      summary: Get Company member by id
+      tags:
+      - Company Management
+      description: Get company member by id.
+      operationId: get-company-memberById
+      parameters:
+      - name: id
+        in: path
+        description: ID of the company member
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Get company member by id.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "uuid"
+                      userId:
+                        type: string
+                        example: "uuid"
+                      isCompanyMemberCompleted:
+                        type: boolean
+                        example: true
+                      fullName:
+                        type: string
+                        example: string
+                      residentialAddressAndPO:
+                        type: string
+                        example: string
+                      dateOfBirth:
+                        type: string
+                        format: date-time
+                        example: "2014-08-15T00:00:00.000Z"
+                      countryOfResidence:
+                        type: string
+                        example: string
+                      residencyIdentificationType:
+                        type: string
+                        example: string
+                      position:
+                        type: string
+                        example: string
+                      nationality:
+                        type: string
+                        example: string
+                      civilResidentCardNo:
+                        type: string
+                        example: string
+                      residencyCardOrPassportNo:
+                        type: string
+                        example: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: "2024-08-17T11:11:08.000Z"
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: "2024-08-19T09:23:44.000Z"
+                      userObj:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          firstName:
+                            type: string
+                            example: string
+                          lastName:
+                            type: string
+                            example: string
+                          phone:
+                            type: string
+                            example: string
+                          email:
+                            type: string
+                            format: email
+                            example: string
+                          role:
+                            type: string
+                            example: string
+                          active:
+                            type: boolean
+                            example: true
+                          isAccountLocked:
+                            type: boolean
+                            example: false
+                          accountLockingReason:
+                            type: string
+                            example: string
+                          isMobileVerified:
+                            type: boolean
+                            example: true
+                          isEmailVerified:
+                            type: boolean
+                            example: true
+                          accountType:
+                            type: string
+                            example: "investor"
+                          subRoleId:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T10:57:22.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T13:01:30.000Z"
+                          subRoleObj:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: string
+                              subRoleName:
+                                type: string
+                                example: "regular_investor"
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update Company member
+      tags:
+      - Company Management
+      description: Update company member.
+      operationId: update-company-member
+      parameters:
+      - name: id
+        in: path
+        description: ID of the company member
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: string
+                residentialAddressAndPO:
+                  type: string
+                  example: string
+                countryOfResidence:
+                  type: string
+                  example: string
+                residencyIdentificationType:
+                  type: string
+                  example: string
+                dateOfBirth:
+                  type: string
+                  format: date-time
+                  example: "2014-08-15T00:00:00.000Z"
+                position:
+                  type: string
+                  example: string
+                nationality:
+                  type: string
+                  example: string
+                civilResidentCardNo:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Update company member by id.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Company member updated."
+      security:
+      - bearerAuth: []
+
+  /v1/company-management/peoples:
+    post:
+      summary: Add Company people
+      tags:
+      - Company Management
+      description: Add company people.
+      operationId: add-company-people
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: string
+                residentialAddressAndPO:
+                  type: string
+                  example: string
+                countryOfResidence:
+                  type: string
+                  example: string
+                dateOfBirth:
+                  type: string
+                  format: date-time
+                  example: "2014-08-15T00:00:00.000Z"
+                position:
+                  type: string
+                  example: string
+                civilResidentType:
+                  type: string
+                  example: string
+                civilResidentCardNo:
+                  type: string
+                  example: string
+                closeAssociate:
+                  type: string
+                  example: string
+                department:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Update company member by id.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Company people added successfully."
+      security:
+      - bearerAuth: []
+
+    get:
+      summary: Get Company people
+      tags:
+      - Company Management
+      description: Get company peoples.
+      operationId: get-company-peoples
+      responses:
+        "200":
+          description: Get company peoples.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: string
+                          example: "uuid"
+                        userId:
+                          type: string
+                          example: "uuid"
+                        isCompanyPeopleCompleted:
+                          type: boolean
+                          example: true
+                        fullName:
+                          type: string
+                          example: string
+                        residentialAddressAndPO:
+                          type: string
+                          example: string
+                        dateOfBirth:
+                          type: string
+                          format: date-time
+                          example: "2014-08-15T00:00:00.000Z"
+                        countryOfResidence:
+                          type: string
+                          example: string
+                        closeAssociate:
+                          type: string
+                          example: string
+                        department:
+                          type: string
+                          example: string
+                        position:
+                          type: string
+                          example: string
+                        civilResidentType:
+                          type: string
+                          example: string
+                        civilResidentCardNo:
+                          type: string
+                          example: string
+                        shareholdingPercentage:
+                          type: string
+                          example: string
+                        nationality:
+                          type: string
+                          example: string
+                        residencyIdentificationType:
+                          type: string
+                          example: string
+                        residencyCardOrPassportNo:
+                          type: string
+                          example: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: "2024-08-17T11:11:08.000Z"
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          example: "2024-08-19T09:23:44.000Z"
+                        userObj:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                              example: uuid
+                            firstName:
+                              type: string
+                              example: string
+                            lastName:
+                              type: string
+                              example: string
+                            phone:
+                              type: string
+                              example: string
+                            email:
+                              type: string
+                              format: email
+                              example: string
+                            role:
+                              type: string
+                              example: string
+                            active:
+                              type: boolean
+                              example: true
+                            isAccountLocked:
+                              type: boolean
+                              example: false
+                            accountLockingReason:
+                              type: string
+                              example: string
+                            isMobileVerified:
+                              type: boolean
+                              example: true
+                            isEmailVerified:
+                              type: boolean
+                              example: true
+                            accountType:
+                              type: string
+                              example: "investor"
+                            subRoleId:
+                              type: string
+                              format: uuid
+                              example: uuid
+                            createdAt:
+                              type: string
+                              format: date-time
+                              example: "2024-09-09T10:57:22.000Z"
+                            updatedAt:
+                              type: string
+                              format: date-time
+                              example: "2024-09-09T13:01:30.000Z"
+                            subRoleObj:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                  example: string
+                                subRoleName:
+                                  type: string
+                                  example: "regular_investor"
+                                createdAt:
+                                  type: string
+                                  format: date-time
+                                  example: "2024-09-05T10:50:13.000Z"
+                                updatedAt:
+                                  type: string
+                                  format: date-time
+                                  example: "2024-09-05T10:50:13.000Z"
+      security:
+      - bearerAuth: []
+
+  /v1/company-management/people/{id}:
+    get:
+      summary: Get Company people by id
+      tags:
+      - Company Management
+      description: Get company people by id.
+      operationId: get-company-peopleById
+      parameters:
+      - name: id
+        in: path
+        description: ID of the company people
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Get company people by id.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "uuid"
+                      userId:
+                        type: string
+                        example: "uuid"
+                      isCompanyMemberCompleted:
+                        type: boolean
+                        example: true
+                      fullName:
+                        type: string
+                        example: string
+                      residentialAddressAndPO:
+                        type: string
+                        example: string
+                      dateOfBirth:
+                        type: string
+                        format: date-time
+                        example: "2014-08-15T00:00:00.000Z"
+                      countryOfResidence:
+                        type: string
+                        example: string
+                      closeAssociate:
+                        type: string
+                        example: string
+                      department:
+                        type: string
+                        example: string
+                      position:
+                        type: string
+                        example: string
+                      civilResidentType:
+                        type: string
+                        example: string
+                      civilResidentCardNo:
+                        type: string
+                        example: string
+                      shareholdingPercentage:
+                        type: string
+                        example: string
+                      nationality:
+                        type: string
+                        example: string
+                      residencyIdentificationType:
+                        type: string
+                        example: string
+                      residencyCardOrPassportNo:
+                        type: string
+                        example: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: "2024-08-17T11:11:08.000Z"
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: "2024-08-19T09:23:44.000Z"
+                      userObj:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          firstName:
+                            type: string
+                            example: string
+                          lastName:
+                            type: string
+                            example: string
+                          phone:
+                            type: string
+                            example: string
+                          email:
+                            type: string
+                            format: email
+                            example: string
+                          role:
+                            type: string
+                            example: string
+                          active:
+                            type: boolean
+                            example: true
+                          isAccountLocked:
+                            type: boolean
+                            example: false
+                          accountLockingReason:
+                            type: string
+                            example: string
+                          isMobileVerified:
+                            type: boolean
+                            example: true
+                          isEmailVerified:
+                            type: boolean
+                            example: true
+                          accountType:
+                            type: string
+                            example: "investor"
+                          subRoleId:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T10:57:22.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T13:01:30.000Z"
+                          subRoleObj:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: string
+                              subRoleName:
+                                type: string
+                                example: "regular_investor"
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update Company People
+      tags:
+      - Company Management
+      description: Update company people.
+      operationId: update-company-people
+      parameters:
+      - name: id
+        in: path
+        description: ID of the company people
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: string
+                residentialAddressAndPO:
+                  type: string
+                  example: string
+                countryOfResidence:
+                  type: string
+                  example: string
+                dateOfBirth:
+                  type: string
+                  format: date-time
+                  example: "2014-08-15T00:00:00.000Z"
+                position:
+                  type: string
+                  example: string
+                civilResidentCardNo:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Update company people by id.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Company people updated."
+      security:
+      - bearerAuth: []
+
+  /v1/documents/institutional-investor:
+    post:
+      summary: Add institutional investor documents
+      tags:
+      - Documents
+      description: Add institutional investor documents
+      operationId: add-institutional-investor-documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                passportDocURL:
+                  type: string
+                  example: string
+                residenceOrTaxIdDocURL:
+                  type: string
+                  example: string
+                crNumberDocURL:
+                  type: string
+                  example: string
+                authorisedSignatureListDocURL:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Add institutional investor documents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Documents added successfully."
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update institutional investor documents
+      tags:
+      - Documents
+      description: Update institutional investor documents
+      operationId: update-institutional-investor-documents
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                passportDocURL:
+                  type: string
+                  example: string
+                residenceOrTaxIdDocURL:
+                  type: string
+                  example: string
+                crNumberDocURL:
+                  type: string
+                  example: string
+                authorisedSignatureListDocURL:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Update institutional investor documents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Documents updated successfully."
+      security:
+      - bearerAuth: []
+
+  /v1/documents/investor:
+    post:
+      summary: Add Investor documents
+      tags:
+      - Documents
+      description: Add Investor documents
+      operationId: add-investor-documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                passportDocURL:
+                  type: string
+                  example: string
+                residenceOrTaxIdDocURL:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Add Investor documents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Documents added successfully."
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update Investor documents
+      tags:
+      - Documents
+      description: Update Investor documents
+      operationId: update-investor-documents
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                passportDocURL:
+                  type: string
+                  example: string
+                residenceOrTaxIdDocURL:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Investor document updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Documents updated successfully."
+      security:
+      - bearerAuth: []
+
+  /v1/documents/business-investor:
+    post:
+      summary: Add Business Investor documents
+      tags:
+      - Documents
+      description: Add Business Investor documents
+      operationId: add-business-investor-documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                passportDocURL:
+                  type: string
+                  example: string
+                residenceOrTaxIdDocURL:
+                  type: string
+                  example: string
+                crNumberDocURL:
+                  type: string
+                  example: string
+                authorisedSignatureListDocURL:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Add Business Investor documents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Documents added successfully."
+      security:
+      - bearerAuth: []
+
+    put:
+      summary: Update Business Investor documents
+      tags:
+      - Documents
+      description: Update Business Investor documents
+      operationId: update-business-investor-documents
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                passportDocURL:
+                  type: string
+                  example: string
+                residenceOrTaxIdDocURL:
+                  type: string
+                  example: string
+                crNumberDocURL:
+                  type: string
+                  example: string
+                authorisedSignatureListDocURL:
+                  type: string
+                  example: string
+      responses:
+        "200":
+          description: Business Investor document updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Documents updated successfully."
+      security:
+      - bearerAuth: []
+
+  /v1/documents/:
+    get:
+      summary: Get All documents
+      tags:
+      - Documents
+      description: Get All documents
+      operationId: get-my-documents
+      responses:
+        "200":
+          description: Get All documents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: uuid
+                      userId:
+                        type: string
+                        format: uuid
+                        example: uuid
+                      isDocumentsUploadCompleted:
+                        type: boolean
+                        example: true
+                      residenceOrTaxIdDocURL:
+                        type: string
+                        example: string
+                      passportDocURL:
+                        type: string
+                        example: string
+                      crNumberDocURL:
+                        type: string
+                        example: string
+                      authorisedSignatureListDocURL:
+                        type: string
+                        example: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: "2024-09-09T13:01:52.000Z"
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: "2024-09-09T13:01:52.000Z"
+                      userObj:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          firstName:
+                            type: string
+                            example: string
+                          lastName:
+                            type: string
+                            example: string
+                          phone:
+                            type: string
+                            example: string
+                          email:
+                            type: string
+                            format: email
+                            example: string
+                          role:
+                            type: string
+                            example: string
+                          active:
+                            type: boolean
+                            example: true
+                          isAccountLocked:
+                            type: boolean
+                            example: false
+                          accountLockingReason:
+                            type: string
+                            example: string
+                          isMobileVerified:
+                            type: boolean
+                            example: true
+                          isEmailVerified:
+                            type: boolean
+                            example: true
+                          accountType:
+                            type: string
+                            example: "investor"
+                          subRoleId:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T10:57:22.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-09-09T13:01:30.000Z"
+                          subRoleObj:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                                example: string
+                              subRoleName:
+                                type: string
+                                example: "regular_investor"
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: "2024-09-05T10:50:13.000Z"
+      security:
+      - bearerAuth: []

@@ -1,87 +1,164 @@
-const express = require('express');
-const helmet = require('helmet');
-const xss = require('xss-clean');
-const mongoSanitize = require('express-mongo-sanitize');
-const compression = require('compression');
-const cors = require('cors');
-const httpStatus = require('http-status');
-const config = require('./config/config');
-const morgan = require('./config/morgan');
-const { authLimiter } = require('./middlewares/rateLimiter');
-const routes = require('./routes/v1');
-const { errorConverter, errorHandler } = require('./middlewares/error');
-const ApiError = require('./utils/ApiError');
-const session = require('express-session');
-const { jwtStrategy } = require('./config/passport');
-const passport = require('passport');
+const express = require("express");
+const path = require("path");
+const cors = require("cors");
+const httpStatus = require("http-status");
+const config = require("./config/config");
+const morgan = require("./config/morgan");
+// authentication and error handling
+const session = require("express-session");
+const passport = require("passport");
+const { jwtStrategy } = require("./config/jwtStrategy");
+const xss = require("xss-clean");
+const ApiError = require("./utilities/apiErrors");
+//const { rateLimiterMiddleware } = require("./middlewares/rateLimiter");
+const { errorConverter, errorHandler } = require("./middlewares/error");
+const { default: helmet } = require("helmet");
+const compression = require("compression");
+// Swagger
+const YAML = require("yamljs");
+const swaggerJsdoc = YAML.load("./src/swagger.yaml");
+const swaggerUi = require("swagger-ui-express");
+
+const swaggerDocumentPortal = YAML.load("./src/swagger/portal.yaml");
+const swaggerDocumentBackoffice = YAML.load("./src/swagger/backoffice.yaml");
+
+// routes
+const routes = require("./routes");
+const { domainCheckerMiddleware } = require("./middlewares/domainChecker");
+const { addOrUpdateCurrencyRates } = require("./modules/currencies/services");
+const logger = require("./config/logger");
+const { checkCampaignTargetRaised } = require("./modules/campaigns/services");
+const { updateRepaymentDueDate } = require("./modules/campaigns/services");
+const {
+  deleteExpiredTransactions,
+} = require("./modules/transactions/services");
+const {
+  updateTotalAmount,
+  updateLateFeeAmount,
+} = require("./modules/fundraiserRepayments/services");
+const updateInvestmentStatus = require("./modules/investments/services/updateInvestmentStatus");
+const { resetLoginAttempts } = require("./modules/users/services");
+// const { kycExpiryCheck } = require("./modules/kyc/services");
+// const { sessionStore } = require("./db/db");
 
 const app = express();
 
-if (config.env !== 'test') {
+app.use("/swagger-ui", express.static(path.join(__dirname, "src/swagger")));
+
+app.use("/api-docs", express.static(path.join(__dirname, "../public")));
+app.get("/swagger/portal", (req, res) => {
+  res.json(swaggerDocumentPortal);
+});
+app.get("/swagger/backoffice", (req, res) => {
+  res.json(swaggerDocumentBackoffice);
+});
+app.get("/api-docs", (req, res) => {
+  res.sendFile(path.join(__dirname, "./swagger/index.html"));
+});
+
+// Use helmet with customized configuration
+app.use(helmet());
+
+// Set Content Security Policy (CSP)
+app.use(
+  helmet.contentSecurityPolicy({
+    // the following directives will be merged into the default helmet CSP policy
+    directives: {
+      defaultSrc: ["'self'"], // default value for all directives that are absent
+      scriptSrc: ["'self'"], // helps prevent XSS attacks
+      frameAncestors: ["'none'"], // helps prevent Clickjacking attacks
+      imgSrc: ["'self'", "'http://imgexample.com'"],
+      styleSrc: ["'none'"],
+    },
+  })
+);
+
+// Set HTTP Strict Transport Security (HSTS)
+app.use(
+  helmet.hsts({
+    maxAge: 31536000, // 1 year in seconds
+    includeSubDomains: false, // Include subdomains
+  })
+);
+
+// Set X-Content-Type-Options
+app.use(helmet.noSniff());
+
+// Set X-Frame-Options
+app.use(helmet.frameguard({ action: "deny" }));
+
+// stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+app.use(helmet.xssFilter());
+
+app.use(helmet.ieNoOpen());
+
+app.use(helmet.hidePoweredBy());
+
+if (config.env !== "test") {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
 }
 
-// set security HTTP headers
-app.use(helmet());
-
 // parse json request body
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: "50mb" }));
 
 // parse urlencoded request body
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // sanitize request data
 app.use(xss());
-app.use(mongoSanitize());
 
 // gzip compression
 app.use(compression());
 
 // enable cors
-app.use(cors({
-  origin: "*", // allow specific origin
-  // methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // allow specific methods
-  // allowedHeaders: ['Content-Type', 'Authorization', 'X-Custom-Header'], // allow specific headers
-  // credentials: true, // allow cookies
-}));
-// app.options('*', cors());
+app.use(cors());
+app.options("*", cors());
 
-
-// limit repeated failed requests to auth endpoints
-if (config.env === 'production') {
-  app.use('/v1/auth', authLimiter);
+if (config.env === "production") {
+  app.use(domainCheckerMiddleware);
+  //app.use(rateLimiterMiddleware);
 }
 
+//Middleware
+app.use(
+  session({
+    secret: process.env.JWT_SECRET,
+    // store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV !== "development" }, // Set `true` if using HTTPS
+  })
+);
 
-// Middlewares
-app.use(session({
-  secret: "secret",
-  resave: false,
-  saveUninitialized: true,
-}))
+// User serialization and deserialization
 passport.serializeUser(function (user, done) {
   done(null, user);
 });
+
 passport.deserializeUser(function (obj, done) {
   done(null, obj);
 });
 
-// jwt authentication
+// Initialize Passport and use session middleware
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use('jwt', jwtStrategy);
 
+// Register JWT authentication strategy
+passport.use("jwt", jwtStrategy);
 
-app.use('/v1', routes);
-
-app.all('/', (req, res) => {
-  res.send("Hello from APIs")
+app.all("/", (req, res) => {
+  res.send("Hello from APIs.");
 });
 
-// send back a 404 error for any unknown api request
+app.use("/v1", routes);
+
 app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+  const error = new ApiError(
+    httpStatus.NOT_FOUND,
+    `${req?.method} ${req?.originalUrl} API Not Found`
+  );
+  next(error); // Passes the error to the error-handling middleware
 });
 
 // convert error to ApiError, if needed

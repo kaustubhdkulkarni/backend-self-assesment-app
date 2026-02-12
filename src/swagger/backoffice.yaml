@@ -1,0 +1,524 @@
+openapi: 3.0.0
+info:
+  title: Wadiaa API Documentation - Backoffice
+  description: Swagger API's Documentation
+  version: 4.0.1
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+- bearerAuth: []
+
+
+servers:
+- url: http://localhost:3001
+  description: Local Development Server
+
+paths:
+  /v1/users/login-admin:
+    post:
+      summary: Login Admin
+      tags:
+      - Auth
+      description: Admin Login with email and password.
+      operationId: login-admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: string
+                password:
+                  type: string
+                  example: string
+              required:
+              - email
+              - password
+      responses:
+        "200":
+          description: Admin login with email id and password
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: 94c9a320-ab73-4383-b3c2-c2323d40593f
+                          firstName:
+                            type: string
+                            example: string
+                          lastName:
+                            type: string
+                            example: string
+                          phone:
+                            type: string
+                            example: 9876543215
+                          email:
+                            type: string
+                            format: email
+                            example: shubham@sdlccorp.com
+                          role:
+                            type: string
+                            example: admin
+                          active:
+                            type: integer
+                            example: 1
+                          isAccountLocked:
+                            type: integer
+                            example: 0
+                          accountLockingReason:
+                            type: string
+                            nullable: true
+                            example: null
+                          isMobileVerified:
+                            type: boolean
+                            example: true
+                          isEmailVerified:
+                            type: boolean
+                            example: true
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-17T11:11:08.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-19T09:23:44.000Z"
+                      tokens:
+                        type: object
+                        properties:
+                          access:
+                            type: object
+                            properties:
+                              token:
+                                type: string
+                                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                              expires:
+                                type: string
+                                format: date-time
+                                example: "2024-08-24T06:16:59.184Z"
+                          refresh:
+                            type: object
+                            properties:
+                              token:
+                                type: string
+                                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                              expires:
+                                type: string
+                                format: date-time
+                                example: "2024-09-22T06:16:59.190Z"
+      security: []
+
+  /v1/users/register-admin:
+    post:
+      summary: Register Admin
+      tags:
+      - Auth
+      description: Register admin with the following fields.
+      operationId: register-admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: "Test"
+                lastName:
+                  type: string
+                  example: "User"
+                phone:
+                  type: string
+                  example: "9348823934"
+                email:
+                  type: string
+                  format: email
+                  example: string
+                password:
+                  type: string
+                  example: string
+              required:
+              - firstName
+              - lastName
+              - phone
+              - email
+              - password
+      responses:
+        "200":
+          description: Registered Admin details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: 94c9a320-ab73-4383-b3c2-c2323d40593f
+                          name:
+                            type: string
+                            example: Shubham3
+                          phone:
+                            type: string
+                            example: 9876543215
+                          email:
+                            type: string
+                            format: email
+                            example: shubham@sdlccorp.com
+                          address:
+                            type: string
+                            nullable: true
+                            example: null
+                          role:
+                            type: string
+                            example: user
+                          active:
+                            type: integer
+                            example: 1
+                          isAccountLocked:
+                            type: integer
+                            example: 0
+                          accountLockingReason:
+                            type: string
+                            nullable: true
+                            example: null
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-17T11:11:08.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-19T09:23:44.000Z"
+                      msg:
+                        type: string
+                        example: "User Registered Successfully"
+      security: []
+
+  /v1/auth/verify-email:
+    get:
+      summary: Verify user email
+      tags:
+      - Auth
+      description: Verify user email.
+      operationId: verify-user-email
+      parameters:
+      - name: token
+        in: query
+        description: Token for authentication
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Verify User email
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "Email verified successfully."
+      security: []
+
+  /v1/otp/send:
+    post:
+      summary: Send Otp for phone verification
+      tags:
+      - Auth
+      description: Send otp for user phone.
+      operationId: send-otp-for-verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phoneNumber:
+                  type: string
+                  example: "9604514363"
+              required:
+              - phoneNumber
+      responses:
+        "200":
+          description: Send otp for user phone.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "An OTP has been send to verify your phone number."
+      security: []
+
+  /v1/otp/verify:
+    post:
+      summary: Verify Otp for phone verification
+      tags:
+      - Auth
+      description: Verify otp for user phone.
+      operationId: verify-otp-phone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phoneNumber:
+                  type: string
+                  example: "9604514363"
+                otpCode:
+                  type: integer
+                  example: 880645
+              required:
+              - phoneNumber
+              - otpCode
+      responses:
+        "200":
+          description: Verify otp for user phone.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    example: "An OTP has been send to verify your phone number."
+      security: []
+
+  /v1/users/:
+    get:
+      summary: Get All Users
+      tags:
+      - Users
+      description: Get All Users.
+      operationId: get-all-user
+      parameters:
+      - name: page
+        in: query
+        description: Page number for pagination
+        required: false
+        schema:
+          type: integer
+          example: 1
+      - name: limit
+        in: query
+        description: Number of items per page
+        required: false
+        schema:
+          type: integer
+          example: 1
+      - name: sort
+        in: query
+        description: Sort order for the results
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            example: ["email", "desc"]
+      - name: filter
+        in: query
+        description: Filter criteria for the results
+        required: false
+        schema:
+          type: string
+          example: '{"search":""}'
+      responses:
+        "200":
+          description: Get all users.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      users:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: string
+                              example: "uuid"
+                            firstName:
+                              type: string
+                              example: "string"
+                            lastName:
+                              type: string
+                              example: "string"
+                            phone:
+                              type: string
+                              example: "string"
+                            email:
+                              type: string
+                              format: email
+                              example: "string"
+                            role:
+                              type: string
+                              example: "user"
+                            active:
+                              type: boolean
+                              example: false
+                            isAccountLocked:
+                              type: boolean
+                              example: false
+                            accountLockingReason:
+                              type: string
+                              example: string
+                            isMobileVerified:
+                              type: boolean
+                              example: false
+                            isEmailVerified:
+                              type: boolean
+                              example: false
+                            accountType:
+                              type: string
+                              example: string
+                            subRoleId:
+                              type: string
+                              example: uuid
+                            createdAt:
+                              type: string
+                              format: date-time
+                              example: "2024-09-06T06:27:46.000Z"
+                            updatedAt:
+                              type: string
+                              format: date-time
+                              example: "2024-09-06T06:27:46.000Z"
+                            subRoleObj:
+                              type: string
+                              format: date-time
+                              example: "2024-09-06T06:27:46.000Z"
+                    example: "User update successfully."
+      security:
+      - bearerAuth: []
+
+  /v1/sub-roles/:
+    post:
+      summary: Add Sub Role
+      tags:
+      - Sub Role
+      description: Add sub added with the following fields.
+      operationId: add-sub-role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subRoleName: 
+                  type: string
+                  example: string
+              required:
+              - subRoleName
+      responses:
+        "200":
+          description: Add sub added with the following fields.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      subRole:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: uuid
+                          subRoleName:
+                            type: string
+                            example: string
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-17T11:11:08.000Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-08-19T09:23:44.000Z"
+                    msg:
+                      type: string
+                      example: "Sub Role added successfully."
+      security:
+      - bearerAuth: []
+
+  

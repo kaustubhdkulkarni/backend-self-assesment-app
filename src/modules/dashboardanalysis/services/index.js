@@ -1,1 +1,0 @@
-module.exports.listDocumentCount = require('./dashboardAnalysis.services')

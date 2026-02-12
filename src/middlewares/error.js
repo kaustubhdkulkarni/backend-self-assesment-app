@@ -1,47 +1,41 @@
-const mongoose = require('mongoose');
+const mysql = require('mysql2');
 const httpStatus = require('http-status');
+const ApiError = require('../utilities/apiErrors');
 const config = require('../config/config');
 const logger = require('../config/logger');
-const ApiError = require('../utils/ApiError');
 
+// Error converter middleware
 const errorConverter = (err, req, res, next) => {
-  let error = err;
-  if (!(error instanceof ApiError)) {
-    const statusCode =
-      error.statusCode || error instanceof mongoose.Error ? httpStatus.BAD_REQUEST : httpStatus.INTERNAL_SERVER_ERROR;
-    const message = error.message || httpStatus[statusCode];
-    error = new ApiError(statusCode, message, false, err.stack);
-  }
-  next(error);
+    const statusCode = err.code === 'ER_BAD_FIELD_ERROR' || err.code === 'ER_NO_SUCH_TABLE'
+        ? httpStatus.BAD_REQUEST
+        : err.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
+    const message = err.message || httpStatus[statusCode];
+    const error = err instanceof ApiError ? err : new ApiError(statusCode, message, false, err.stack);
+    next(error);
 };
 
-// eslint-disable-next-line no-unused-vars
+// Error handler middleware
 const errorHandler = (err, req, res, next) => {
-  let { statusCode, message,status=false } = err;
-  if (config.env === 'production' && !err.isOperational) {
-    statusCode = httpStatus.INTERNAL_SERVER_ERROR;
-    message = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
-    // data = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
-  }
+    const statusCode = err.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
+    const response = {
+        code: statusCode,
+        status: statusCode < 500, // True for client errors, false for server errors
+        message: config.env === 'production' && !err.isOperational
+            ? 'An unexpected error occurred'
+            : err.message,
+        ...(config.env === 'development' && { stack: err.stack })
+    };
 
-  res.locals.errorMessage = err.message;
+    if (err.isOperational) {
+        logger.warn(err);
+    } else {
+        logger.error(err);
+    }
 
-  const response = {
-    code: statusCode,
-    status:status,
-    message,
-    data:message,
-    ...(config.env === 'development' && { stack: err.stack }),
-  };
-
-  if (config.env === 'development') {
-    logger.error(err);
-  }
-
-  res.status(statusCode).send(response);
+    res.status(statusCode).send(response);
 };
 
 module.exports = {
-  errorConverter,
-  errorHandler,
+    errorConverter,
+    errorHandler,
 };
