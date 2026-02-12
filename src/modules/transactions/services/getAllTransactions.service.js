@@ -48,7 +48,8 @@ const getAllTransactions = async (sort, page = 1, limit = 10, filter = {}) => {
             include: [
                 {
                     model: db.Users, 
-                    as: 'userObj', 
+                    as: 'userObj',
+                    
                     required: true, 
                 },
             ],
